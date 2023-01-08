@@ -1,5 +1,5 @@
 ﻿using Microservices.CatalogService.Entities;
-using Microservices.CatalogService.Repositories;
+using MicroServices.Common;
 using Microsoft.AspNetCore.Mvc;
 using static Microservices.CatalogService.Dto;
 

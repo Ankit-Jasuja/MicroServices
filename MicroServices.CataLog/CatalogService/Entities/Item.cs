@@ -1,4 +1,6 @@
-﻿namespace Microservices.CatalogService.Entities
+﻿using MicroServices.Common;
+
+namespace Microservices.CatalogService.Entities
 {
     public class Item : IEntity
     {

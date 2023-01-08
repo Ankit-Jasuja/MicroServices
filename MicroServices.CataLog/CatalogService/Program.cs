@@ -1,7 +1,8 @@
-using Microservices.CatalogService.Repositories;
 using Microservices.CatalogService.Entities;
-using Microservices.CatalogService.Settings;
 using MongoDB.Driver;
+using MicroServices.Common.MongoDB;
+using MicroServices.Common;
+using MicroServices.Common.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 ServiceSettings serviceSettings;
