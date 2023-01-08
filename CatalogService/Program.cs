@@ -1,3 +1,4 @@
+using CatalogService.Entities;
 using CatalogService.Repositories;
 using CatalogService.Settings;
 using MongoDB.Bson.Serialization;
@@ -9,18 +10,14 @@ ServiceSettings serviceSettings;
 
 // Add services to the container.
 
-BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.BsonType.String));
-BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(MongoDB.Bson.BsonType.String));
+builder.Services.AddMongo()
+    .AddMongoRepo<Item>("items");
 
-serviceSettings = builder.Configuration.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
-builder.Services.AddSingleton(sp =>
+builder.Services.AddSingleton<IRepository<Item>>(sp =>
 {
-    var mongoDbSettings = builder.Configuration.GetSection(nameof(MongoDbSettings)).Get<MongoDbSettings>();
-    var mongoClient = new MongoClient(mongoDbSettings.ConnectionString);
-    return mongoClient.GetDatabase(serviceSettings.ServiceName);
+    var database = sp.GetService<IMongoDatabase>();
+    return new MongoRepository<Item>(database!, "items");
 });
-
-builder.Services.AddSingleton<IItemsRepository, ItemsRepository>();
 
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
 builder.Services.AddEndpointsApiExplorer();
