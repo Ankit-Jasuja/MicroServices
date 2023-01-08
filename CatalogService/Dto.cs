@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace CatalogService
+namespace Microservices.CatalogService
 {
     public class Dto
     {

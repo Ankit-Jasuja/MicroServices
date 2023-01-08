@@ -1,7 +1,7 @@
-﻿using CatalogService.Entities;
+﻿using Microservices.CatalogService.Entities;
 using MongoDB.Driver;
 
-namespace CatalogService.Repositories
+namespace Microservices.CatalogService.Repositories
 {
     public class MongoRepository<T> : IRepository<T> where T : IEntity
     {
@@ -9,7 +9,7 @@ namespace CatalogService.Repositories
         private readonly IMongoCollection<T> dbCollection;
         private readonly FilterDefinitionBuilder<T> filterBuilder = Builders<T>.Filter;
 
-        public MongoRepository(IMongoDatabase mongoDatabase,string collectionName)
+        public MongoRepository(IMongoDatabase mongoDatabase, string collectionName)
         {
             //var mongoClient = new MongoClient("mongodb://localhost:27017");
             //var database = mongoClient.GetDatabase("Catalog");

@@ -1,4 +1,4 @@
-﻿namespace CatalogService.Settings
+﻿namespace Microservices.CatalogService.Settings
 {
     public class ServiceSettings
     {

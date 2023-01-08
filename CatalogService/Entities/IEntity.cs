@@ -1,4 +1,4 @@
-﻿namespace CatalogService.Entities
+﻿namespace Microservices.CatalogService.Entities
 {
     public interface IEntity
     {

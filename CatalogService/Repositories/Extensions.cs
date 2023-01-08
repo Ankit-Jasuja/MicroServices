@@ -1,10 +1,11 @@
-﻿using CatalogService.Settings;
-using MongoDB.Bson.Serialization.Serializers;
+﻿using MongoDB.Bson.Serialization.Serializers;
 using MongoDB.Bson.Serialization;
 using MongoDB.Driver;
-using CatalogService.Entities;
+using Microservices.CatalogService.Settings;
+using Microservices.CatalogService.Entities;
+using Microservices.CatalogService.Repositories;
 
-namespace CatalogService.Repositories
+namespace Microservices.CatalogService.Repositories
 {
     public static class Extensions
     {
@@ -13,7 +14,7 @@ namespace CatalogService.Repositories
             BsonSerializer.RegisterSerializer(new GuidSerializer(MongoDB.Bson.BsonType.String));
             BsonSerializer.RegisterSerializer(new DateTimeOffsetSerializer(MongoDB.Bson.BsonType.String));
 
-            services.AddSingleton<IMongoDatabase>(sp =>
+            services.AddSingleton(sp =>
             {
                 var configuration = sp.GetService<IConfiguration>();
                 var serviceSettings = configuration?.GetSection(nameof(ServiceSettings)).Get<ServiceSettings>();
@@ -25,8 +26,8 @@ namespace CatalogService.Repositories
             return services;
         }
 
-        public static IServiceCollection AddMongoRepo<T>(this IServiceCollection services, string collectionName) 
-            where T:IEntity
+        public static IServiceCollection AddMongoRepo<T>(this IServiceCollection services, string collectionName)
+            where T : IEntity
         {
             services.AddSingleton<IRepository<T>>(sp =>
             {

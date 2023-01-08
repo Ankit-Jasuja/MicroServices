@@ -1,6 +1,6 @@
-﻿using CatalogService.Entities;
+﻿using Microservices.CatalogService.Entities;
 
-namespace CatalogService.Repositories
+namespace Microservices.CatalogService.Repositories
 {
     public interface IRepository<T> where T : IEntity
     {

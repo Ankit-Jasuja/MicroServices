@@ -1,9 +1,9 @@
-﻿using CatalogService.Entities;
-using CatalogService.Repositories;
+﻿using Microservices.CatalogService.Entities;
+using Microservices.CatalogService.Repositories;
 using Microsoft.AspNetCore.Mvc;
-using static CatalogService.Dto;
+using static Microservices.CatalogService.Dto;
 
-namespace CatalogService.Controllers
+namespace Microservices.CatalogService.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]

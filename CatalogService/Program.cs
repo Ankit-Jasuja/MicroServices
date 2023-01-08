@@ -1,8 +1,6 @@
-using CatalogService.Entities;
-using CatalogService.Repositories;
-using CatalogService.Settings;
-using MongoDB.Bson.Serialization;
-using MongoDB.Bson.Serialization.Serializers;
+using Microservices.CatalogService.Repositories;
+using Microservices.CatalogService.Entities;
+using Microservices.CatalogService.Settings;
 using MongoDB.Driver;
 
 var builder = WebApplication.CreateBuilder(args);
