@@ -1,4 +1,5 @@
 ﻿using MicroServices.Common;
+using MicroServices.InventoryService.Clients;
 using MicroServices.InventoryService.Entities;
 using Microsoft.AspNetCore.Mvc;
 using static MicroServices.InventoryService.Dto;
@@ -10,10 +11,12 @@ namespace MicroServices.InventoryService.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<InventoryItem> _inventoryItemRepository;
+        private readonly CatalogClient _catalogClient;
 
-        public ItemsController(IRepository<InventoryItem> repository)
+        public ItemsController(IRepository<InventoryItem> repository, CatalogClient catalogClient)
         {
             _inventoryItemRepository = repository;
+            _catalogClient = catalogClient;
         }
 
         [HttpGet]
@@ -24,10 +27,17 @@ namespace MicroServices.InventoryService.Controllers
                 return BadRequest();
             }
 
-            var items = (await _inventoryItemRepository.GetAllAsync(item => item.UserId == userID))
-               .Select(item => item.AsDto());
+            var allCataLogItems = await _catalogClient.GetCatalogItemsAsync();
 
-            return Ok(items);
+            var inventoryItems = await _inventoryItemRepository.GetAllAsync(item => item.UserId == userID);
+
+            var inventoryItemDtos = inventoryItems.Select(item =>
+            {
+                var catalogItem = allCataLogItems.Single(z => z.Id == item.CatalogItemID);
+                return item.AsDto(catalogItem.Name, catalogItem.Description);
+            });
+
+            return Ok(inventoryItemDtos);
         }
 
         [HttpPost]

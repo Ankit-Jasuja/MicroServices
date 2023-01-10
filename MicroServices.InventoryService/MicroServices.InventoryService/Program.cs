@@ -1,4 +1,5 @@
 using MicroServices.Common.MongoDB;
+using MicroServices.InventoryService.Clients;
 using MicroServices.InventoryService.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +8,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddMongo()
     .AddMongoRepo<InventoryItem>("inventoryitems");
+
+builder.Services.AddHttpClient<CatalogClient>(client => client.BaseAddress = new Uri("https://localhost:7105"));
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
