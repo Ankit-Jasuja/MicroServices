@@ -5,7 +5,7 @@ using static Microservices.CatalogService.Dto;
 
 namespace Microservices.CatalogService.Controllers
 {
-    [Route("api/[controller]")]
+    [Route("items")]
     [ApiController]
     public class ItemsController : ControllerBase
     {
