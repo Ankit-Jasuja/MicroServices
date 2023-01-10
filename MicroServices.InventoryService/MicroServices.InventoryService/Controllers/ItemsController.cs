@@ -30,7 +30,7 @@ namespace MicroServices.InventoryService.Controllers
             return Ok(items);
         }
 
-        [HttpGet]
+        [HttpPost]
         public async Task<ActionResult> PostAsync(GrantItemDto grantItemDto)
         {
             var existingInventoryItem = await _inventoryItemRepository.GetAsync(
@@ -56,3 +56,4 @@ namespace MicroServices.InventoryService.Controllers
             return Ok();
         }
     }
+}

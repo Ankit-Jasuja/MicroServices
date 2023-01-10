@@ -12,11 +12,6 @@ ServiceSettings serviceSettings;
 builder.Services.AddMongo()
     .AddMongoRepo<Item>("items");
 
-builder.Services.AddSingleton<IRepository<Item>>(sp =>
-{
-    var database = sp.GetService<IMongoDatabase>();
-    return new MongoRepository<Item>(database!, "items");
-});
 
 builder.Services.AddControllers(options => options.SuppressAsyncSuffixInActionNames = false);
 builder.Services.AddEndpointsApiExplorer();
