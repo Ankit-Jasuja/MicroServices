@@ -3,6 +3,7 @@ using MicroServices.InventoryService.Clients;
 using MicroServices.InventoryService.Entities;
 using Polly;
 using Polly.Timeout;
+using System;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -27,6 +28,25 @@ builder.Services.AddHttpClient<CatalogClient>(client =>
         .LogWarning($"delaying for {timespan.TotalSeconds} seconds,then making retry {retryAttempt}");
     }
     ))
+.AddTransientHttpErrorPolicy(Pbuilder => Pbuilder.Or<TimeoutRejectedException>().CircuitBreakerAsync(
+    3,
+    TimeSpan.FromSeconds(15),
+    onBreak: (outcome, timespan) =>
+    {
+        // do not do in production
+        var serviceProvider = builder.Services?.BuildServiceProvider();
+        serviceProvider.GetService<ILogger<CatalogClient>>()?
+        .LogWarning($"opening the circuit for {timespan.TotalSeconds} seconds");
+    },
+    onReset: () =>
+    {
+        // do not do in production
+        var serviceProvider = builder.Services?.BuildServiceProvider();
+        serviceProvider.GetService<ILogger<CatalogClient>>()?
+        .LogWarning($"closing the circut....");
+    }
+
+))
 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1)); //whenever we invoke anything under localhost:7105,
                                                                 //we are going to wait for one sec before giving up
 
