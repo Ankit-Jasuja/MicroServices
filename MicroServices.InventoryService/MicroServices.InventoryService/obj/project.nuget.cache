@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "rqSZfQnr4r5DdisSEMLdnWhlBMKCrhjYdr+OhN/grTw/MkI46wAokne82CtX5Jm+LqLroQnkLZdBD5vGJX73ug==",
+  "dgSpecHash": "/qHzgaz9Y3hYLP5qVRvmeL7W2cnz/WXN1agQz0kEh0+n0di6mYeRZo5JC5N0s8lsGuyuaATumqn/sT/nPjCpBQ==",
   "success": true,
-  "projectFilePath": "D:\\.net\\MicroServices\\MicroServices.InventoryService\\MicroServices.InventoryService\\MicroServices.InventoryService.csproj",
+  "projectFilePath": "C:\\Users\\ankit\\source\\repos\\MicroServices\\MicroServices.InventoryService\\MicroServices.InventoryService\\MicroServices.InventoryService.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\ankit\\.nuget\\packages\\dnsclient\\1.6.1\\dnsclient.1.6.1.nupkg.sha512",
     "C:\\Users\\ankit\\.nuget\\packages\\microservices.common\\1.0.0\\microservices.common.1.0.0.nupkg.sha512",
