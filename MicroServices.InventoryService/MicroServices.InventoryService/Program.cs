@@ -2,23 +2,35 @@ using MicroServices.Common.MongoDB;
 using MicroServices.InventoryService.Clients;
 using MicroServices.InventoryService.Entities;
 using Polly;
+using Polly.Timeout;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-
 builder.Services.AddMongo()
     .AddMongoRepo<InventoryItem>("inventoryitems");
+
+Random random = new();
 
 builder.Services.AddHttpClient<CatalogClient>(client =>
 {
     client.BaseAddress = new Uri("https://localhost:7105");
 })
+.AddTransientHttpErrorPolicy(Pbuilder => Pbuilder.Or<TimeoutRejectedException>().WaitAndRetryAsync(
+    5,
+    retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt))
+    + TimeSpan.FromMilliseconds(random.Next(0,1000)),
+    onRetry: (outcome, timespan, retryAttempt) =>
+    {
+        // do not do in production
+        var serviceProvider = builder.Services?.BuildServiceProvider();
+        serviceProvider.GetService<ILogger<CatalogClient>>()?
+        .LogWarning($"delaying for {timespan.TotalSeconds} seconds,then making retry {retryAttempt}");
+    }
+    ))
 .AddPolicyHandler(Policy.TimeoutAsync<HttpResponseMessage>(1)); //whenever we invoke anything under localhost:7105,
                                                                 //we are going to wait for one sec before giving up
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
