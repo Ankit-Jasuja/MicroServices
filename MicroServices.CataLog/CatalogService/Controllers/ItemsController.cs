@@ -10,7 +10,6 @@ namespace Microservices.CatalogService.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<Item> _itemsRepository;
-        private static int RequestCounter = 0;
 
         public ItemsController(IRepository<Item> itemsRepository)
         {
@@ -20,22 +19,6 @@ namespace Microservices.CatalogService.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ItemDto>>> GetAsync()
         {
-            RequestCounter++;
-            Console.WriteLine($"Request: {RequestCounter} starting...");
-
-            if(RequestCounter <= 2)
-            {
-                Console.WriteLine($"request {RequestCounter}:delaying...");
-                await Task.Delay(TimeSpan.FromSeconds(10));
-            }
-
-            if (RequestCounter <= 4)
-            {
-                Console.WriteLine($"request {RequestCounter}: 500 internal server error");
-                return StatusCode(500);
-            }
-
-            Console.WriteLine($"request {RequestCounter}: 200 ok");
             var items = (await _itemsRepository.GetAllAsync()).Select(z => z.AsDto());
             return Ok(items);
         }
