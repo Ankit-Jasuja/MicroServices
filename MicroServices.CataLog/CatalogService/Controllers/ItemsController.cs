@@ -1,7 +1,9 @@
-﻿using Microservices.CatalogService.Entities;
+﻿using MassTransit;
+using Microservices.CatalogService.Entities;
 using MicroServices.Common;
 using Microsoft.AspNetCore.Mvc;
 using static Microservices.CatalogService.Dto;
+using static MicroServices.Catalog.Contract.Contracts;
 
 namespace Microservices.CatalogService.Controllers
 {
@@ -10,10 +12,12 @@ namespace Microservices.CatalogService.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<Item> _itemsRepository;
+        private readonly IPublishEndpoint _publishEndpoint;
 
-        public ItemsController(IRepository<Item> itemsRepository)
+        public ItemsController(IRepository<Item> itemsRepository, IPublishEndpoint publishEndpoint)
         {
             _itemsRepository = itemsRepository;
+            _publishEndpoint = publishEndpoint;
         }
 
         [HttpGet]
@@ -26,7 +30,6 @@ namespace Microservices.CatalogService.Controllers
         [HttpGet("{Id}")]
         public async Task<ActionResult<ItemDto>> GetByIdAsync(Guid Id)
         {
-            Console.WriteLine("getting item by Id.......");
             var item = await _itemsRepository.GetAsync(Id);
             if (item == null)
             {
@@ -38,7 +41,6 @@ namespace Microservices.CatalogService.Controllers
         [HttpPost]
         public async Task<ActionResult<ItemDto>> CreateItem(CreateItemDto createItemDto)
         {
-            Console.WriteLine("creating item.......");
             var item = new Item
             {
                 Id = Guid.NewGuid(),
@@ -48,13 +50,13 @@ namespace Microservices.CatalogService.Controllers
                 CreatedDate = DateTimeOffset.Now
             };
             await _itemsRepository.CreateAsync(item);
+            await _publishEndpoint.Publish( new CatalogItemCreated(item.Id, item.Name, item.Description));
             return CreatedAtAction(nameof(GetByIdAsync), new { item.Id }, item);
         }
 
         [HttpPut("Id")]
         public async Task<IActionResult> Put(Guid Id, UpdateItemDto updateItemDto)
         {
-            Console.WriteLine("updating item.......");
             var existingItem = await _itemsRepository.GetAsync(Id);
             if (existingItem is null)
             {
@@ -65,6 +67,8 @@ namespace Microservices.CatalogService.Controllers
             existingItem.Price = updateItemDto.Price;
 
             await _itemsRepository.UpdateAsync(existingItem);
+            await _publishEndpoint.Publish(new CatalogItemUpdated(existingItem.Id, existingItem.Name, 
+                existingItem.Description));
 
             return NoContent();
         }
@@ -78,6 +82,7 @@ namespace Microservices.CatalogService.Controllers
                 return NotFound();
             }
             await _itemsRepository.RemoveAsync(existingItem.Id);
+            await _publishEndpoint.Publish(new CatalogItemDeleted(Id));
             return NoContent();
         }
     }
