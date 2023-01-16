@@ -1,4 +1,5 @@
-﻿using MassTransit;
+﻿using GreenPipes;
+using MassTransit;
 using MassTransit.Definition;
 using MicroServices.Common.Settings;
 using Microsoft.Extensions.Configuration;
@@ -23,6 +24,10 @@ namespace MicroServices.Common.MassTransit
                     configurator.ConfigureEndpoints(context, 
                         new KebabCaseEndpointNameFormatter(serviceSettings?.ServiceName,
                         includeNamespace: false));
+                    configurator.UseMessageRetry(retryConfigurator =>
+                    {
+                        retryConfigurator.Interval(3, TimeSpan.FromSeconds(3));
+                    });
                 });
             });
             services.AddMassTransitHostedService();
