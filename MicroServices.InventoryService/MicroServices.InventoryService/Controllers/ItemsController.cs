@@ -11,12 +11,13 @@ namespace MicroServices.InventoryService.Controllers
     public class ItemsController : ControllerBase
     {
         private readonly IRepository<InventoryItem> _inventoryItemRepository;
-        private readonly CatalogClient _catalogClient;
+        private readonly IRepository<CatalogItem> _catalogItemRepository;
 
-        public ItemsController(IRepository<InventoryItem> repository, CatalogClient catalogClient)
+        public ItemsController(IRepository<InventoryItem> repository,
+            IRepository<CatalogItem> catalogItemRepository)
         {
             _inventoryItemRepository = repository;
-            _catalogClient = catalogClient;
+            _catalogItemRepository = catalogItemRepository;
         }
 
         [HttpGet]
@@ -27,13 +28,13 @@ namespace MicroServices.InventoryService.Controllers
                 return BadRequest();
             }
 
-            var allCataLogItems = await _catalogClient.GetCatalogItemsAsync();
-
             var inventoryItems = await _inventoryItemRepository.GetAllAsync(item => item.UserId == userID);
+            var itemIds = inventoryItems.Select(z => z.CatalogItemID);
+            var cataLogItems = await _catalogItemRepository.GetAllAsync(item=>itemIds.Contains(item.Id));
 
             var inventoryItemDtos = inventoryItems.Select(item =>
             {
-                var catalogItem = allCataLogItems.Single(z => z.Id == item.CatalogItemID);
+                var catalogItem = cataLogItems.Single(z => z.Id == item.CatalogItemID);
                 return item.AsDto(catalogItem.Name, catalogItem.Description);
             });
 

@@ -54,7 +54,7 @@ namespace Microservices.CatalogService.Controllers
             return CreatedAtAction(nameof(GetByIdAsync), new { item.Id }, item);
         }
 
-        [HttpPut("Id")]
+        [HttpPut("{Id}")]
         public async Task<IActionResult> Put(Guid Id, UpdateItemDto updateItemDto)
         {
             var existingItem = await _itemsRepository.GetAsync(Id);
